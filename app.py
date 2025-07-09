@@ -177,4 +177,5 @@ else:
 
 # === Footer ===
 st.markdown("---")
-st.caption("© 2025 Glassify – Streamlit + Gradient Boosting | Developed by Adithya Purama")
+st.caption("© 2025 Glassify – Streamlit + Gradient Boosting | Developed by Adithya Purama and P.haritha ")
+

@@ -5,17 +5,9 @@ import joblib
 import plotly.express as px
 import base64
 
-# === Load Local Image & Convert to Base64 ===
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
-
-bg_image_path = "C:/Users/adith/OneDrive/Desktop/coaching/PROJECT/images.jpg"
-bg_base64 = get_base64_image(bg_image_path)
-
 # === Page Configuration ===
 st.set_page_config(
-    page_title="Glass Classifier",
+    page_title="Glassify - ML Glass Classifier",
     page_icon="🔬",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -30,7 +22,7 @@ def load_model():
 
 model, scaler = load_model()
 
-# === Glass Types Mapping ===
+# === Glass Type Mapping ===
 GLASS_TYPES = {
     1: "Building Windows (Float Processed)",
     2: "Building Windows (Non-Float Processed)",
@@ -40,6 +32,7 @@ GLASS_TYPES = {
     7: "Headlamps"
 }
 
+# === Feature Info ===
 FEATURE_INFO = {
     'RI': {'name': 'Refractive Index', 'tooltip': 'Light bending ability', 'min': 1.51, 'max': 1.54, 'step': 0.0001, 'format': "%.4f", 'default': 1.52},
     'Na': {'name': 'Sodium', 'tooltip': 'Amount of Na₂O', 'min': 10.0, 'max': 16.0, 'step': 0.01, 'format': "%.2f", 'default': 13.5},
@@ -52,17 +45,21 @@ FEATURE_INFO = {
     'Fe': {'name': 'Iron', 'tooltip': 'Coloring agent', 'min': 0.0, 'max': 0.5, 'step': 0.01, 'format': "%.2f", 'default': 0.1},
 }
 
-# === Theme and Background ===
-theme = st.sidebar.radio("🎨 Theme", ["🌞 Light", "🌚 Dark"])
+# === Background Setup ===
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
 
+bg_image_path = "images.jpg"
+bg_base64 = get_base64_image(bg_image_path)
+
+theme = st.sidebar.radio("🎨 Theme", ["🌞 Light", "🌚 Dark"])
 if theme == "🌞 Light":
-    base_bg = "rgba(255,255,255,0.6)"
+    base_bg = "rgba(255,255,255,0.5)"
     font_color = "#000"
-    border_color = "#ccc"
 else:
-    base_bg = "rgba(0,0,0,0.6)"
+    base_bg = "rgba(0,0,0,0.5)"
     font_color = "#fff"
-    border_color = "#444"
 
 st.markdown(f"""
     <style>
@@ -78,85 +75,63 @@ st.markdown(f"""
         border-radius: 12px;
         padding: 1rem;
         margin-top: 1rem;
-        border: 1px solid {border_color};
     }}
     </style>
 """, unsafe_allow_html=True)
 
-# === Sidebar Navigation ===
+# === Navigation ===
 st.sidebar.title("🔍 Navigation")
 mode = st.sidebar.radio("Choose Mode", ["Single Prediction", "Batch Prediction", "Model Info"])
 
-# === Main Title ===
-st.markdown("<h1 class='glass-box'>🔬 Glass Type Classifier</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='glass-box'>🔬 Glassify: ML-Based Glass Classifier</h1>", unsafe_allow_html=True)
 
-# === Single Prediction Mode ===
+# === Single Prediction ===
 if mode == "Single Prediction":
     st.subheader("📥 Enter Chemical Composition")
 
-    def reset_inputs():
-        for feature, info in FEATURE_INFO.items():
-            st.session_state[f"num_{feature}"] = info["default"]
-            st.session_state[f"slider_{feature}"] = info["default"]
+    if st.button("🔁 Reset Inputs"):
+        st.experimental_rerun()
 
     user_inputs = {}
-
     for feature, info in FEATURE_INFO.items():
         col1, col2 = st.columns([2, 3])
-        if f"num_{feature}" not in st.session_state:
-            st.session_state[f"num_{feature}"] = info['default']
-        if f"slider_{feature}" not in st.session_state:
-            st.session_state[f"slider_{feature}"] = info['default']
-
         with col1:
             user_inputs[feature] = st.number_input(
                 f"{info['name']} ({feature})",
                 min_value=info['min'], max_value=info['max'],
-                value=st.session_state[f"num_{feature}"], step=info['step'],
-                format=info['format'], help=info['tooltip'],
-                key=f"num_{feature}"
+                value=info['default'], step=info['step'],
+                format=info['format'], help=info['tooltip'], key=f"num_{feature}"
             )
         with col2:
-            def update_number_input(f=feature):
-                st.session_state[f"num_{f}"] = st.session_state[f"slider_{f}"]
-
             st.slider(
                 f"{info['name']} ({feature})",
                 min_value=info['min'], max_value=info['max'],
-                value=st.session_state[f"slider_{feature}"], step=info['step'],
+                value=user_inputs[feature], step=info['step'],
                 format=info['format'], help=info['tooltip'],
-                key=f"slider_{feature}",
-                on_change=update_number_input,
-                label_visibility="collapsed"
+                key=f"slider_{feature}", label_visibility="collapsed"
             )
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔮 Predict Glass Type", type="primary"):
-            input_data = np.array([list(user_inputs.values())])
-            scaled = scaler.transform(input_data)
-            prediction = model.predict(scaled)[0]
-            proba = model.predict_proba(scaled)[0]
+    if st.button("🔮 Predict Glass Type", type="primary"):
+        input_data = np.array([list(user_inputs.values())])
+        scaled = scaler.transform(input_data)
+        prediction = model.predict(scaled)[0]
+        proba = model.predict_proba(scaled)[0]
 
-            glass_type = f"{prediction} – {GLASS_TYPES.get(prediction, 'Unknown')}"
+        glass_type = GLASS_TYPES.get(prediction, "Unknown")
+        st.markdown(f"""
+            <div class='glass-box'>
+                <h4>🧪 Glass Type: {glass_type} (Type {prediction})</h4>
+            </div>
+        """, unsafe_allow_html=True)
 
-            st.markdown(f"""
-                <div class='glass-box'>
-                    <h4>🧪 Glass Type: {glass_type}</h4>
-                </div>
-            """, unsafe_allow_html=True)
+        st.subheader("📊 Confidence Scores")
+        confidence_df = pd.DataFrame({
+            "Glass Type": [f"{GLASS_TYPES.get(i, f'Type {i}')} (Type {i})" for i in range(1, 8) if i in GLASS_TYPES],
+            "Confidence": proba
+        }).sort_values("Confidence", ascending=False)
 
-            st.subheader("📊 Confidence Scores")
-            confidence_df = pd.DataFrame({
-                "Glass Type": [f"{i} – {GLASS_TYPES.get(i, f'Type {i}')}" for i in model.classes_],
-                "Confidence": proba
-            }).sort_values("Confidence", ascending=False)
-
-            fig = px.bar(confidence_df, x="Confidence", y="Glass Type", orientation="h", height=400)
-            st.plotly_chart(fig, use_container_width=True)
-
-    with col2:
-        st.button("🔁 Reset Inputs", on_click=reset_inputs)
+        fig = px.bar(confidence_df, x="Confidence", y="Glass Type", orientation="h", height=400)
+        st.plotly_chart(fig, use_container_width=True)
 
 # === Batch Prediction ===
 elif mode == "Batch Prediction":
@@ -165,6 +140,7 @@ elif mode == "Batch Prediction":
     if file:
         df = pd.read_csv(file)
         st.dataframe(df.head(), use_container_width=True)
+
         missing_cols = [col for col in FEATURE_INFO if col not in df.columns]
         if missing_cols:
             st.warning(f"Missing columns in CSV: {missing_cols}")
@@ -172,7 +148,7 @@ elif mode == "Batch Prediction":
             if st.button("⚡ Predict All"):
                 X = scaler.transform(df[list(FEATURE_INFO)])
                 preds = model.predict(X)
-                df["Predicted Type"] = [f"{i} – {GLASS_TYPES.get(i, 'Unknown')}" for i in preds]
+                df["Predicted Type"] = [f"{GLASS_TYPES.get(i, 'Unknown')} (Type {i})" for i in preds]
                 df["Confidence"] = [max(p) for p in model.predict_proba(X)]
                 st.success("✅ Predictions Complete")
                 st.dataframe(df, use_container_width=True)
@@ -183,33 +159,22 @@ else:
     st.subheader("📄 Model Info")
     st.markdown("A Gradient Boosting Classifier trained on the UCI Glass Dataset using SMOTE for class balancing.")
 
-    st.markdown("### 🧪 Features & Descriptions")
-    st.dataframe(pd.DataFrame([{
-        'Feature': f, 'Name': v['name'], 'Tooltip': v['tooltip']
-    } for f, v in FEATURE_INFO.items()]), use_container_width=True)
+    st.markdown("### 🧪 Features")
+    st.dataframe(pd.DataFrame([
+        {'Feature': f, 'Name': v['name'], 'Tooltip': v['tooltip']} for f, v in FEATURE_INFO.items()
+    ]), use_container_width=True)
 
     st.markdown("### 🔖 Glass Type Mapping")
-    st.dataframe(pd.DataFrame([{
-        'Class ID': k, 'Glass Type': v
-    } for k, v in GLASS_TYPES.items()]), use_container_width=True)
+    st.dataframe(pd.DataFrame([
+        {'Class ID': k, 'Glass Type': v} for k, v in GLASS_TYPES.items()
+    ]), use_container_width=True)
 
-    st.markdown("### 📈 Performance Summary")
-    st.markdown("""
-- **Train Accuracy:** 98.54%
-- **Test Accuracy:** 89.47%
-- **Cross-Validation Accuracy (5-fold):** 88.32% ± 2.87%
-- **Macro F1 Score (Test):** 89.00%
-
-#### 📊 Classification Report:
-           precision    recall  f1-score   support
-       1       0.74      0.89      0.81        19
-       2       0.87      0.68      0.76        19
-       3       0.84      0.84      0.84        19
-       5       0.95      1.00      0.97        19
-       6       1.00      1.00      1.00        19
-       7       1.00      0.95      0.97        19
-""")
+    st.markdown("### 📈 Performance Metrics (Training Results)")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Test Accuracy", "89.47%")
+    col2.metric("CV Accuracy", "88.32% ± 2.87%")
+    col3.metric("Train Accuracy", "98.54%")
 
 # === Footer ===
 st.markdown("---")
-st.caption("© 2025 Glass Classifier App – Streamlit + Gradient Boosting")
+st.caption("© 2025 Glassify – Streamlit + Gradient Boosting | Developed by Adithya Purama")

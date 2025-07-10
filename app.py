@@ -34,14 +34,14 @@ GLASS_TYPES = {
 
 # === Feature Info ===
 FEATURE_INFO = {
-    'RI': {'name': 'Refractive Index', 'tooltip': 'Light bending ability', 'min': 1.51, 'max': 1.54, 'step': 0.0001, 'format': "%.4f", 'default': 1.52},
-    'Na': {'name': 'Sodium', 'tooltip': 'Amount of Na₂O', 'min': 10.0, 'max': 16.0, 'step': 0.01, 'format': "%.2f", 'default': 13.5},
+    'RI': {'name': 'Refractive Index', 'tooltip': 'Light bending ability', 'min': 0.0, 'max': 1.54, 'step': 0.0001, 'format': "%.4f", 'default': 1.52},
+    'Na': {'name': 'Sodium', 'tooltip': 'Amount of Na₂O', 'min': 0.0, 'max': 17.50, 'step': 0.01, 'format': "%.2f", 'default': 13.5},
     'Mg': {'name': 'Magnesium', 'tooltip': 'Stabilizer component', 'min': 0.0, 'max': 4.5, 'step': 0.01, 'format': "%.2f", 'default': 2.5},
     'Al': {'name': 'Aluminum', 'tooltip': 'Glass durability', 'min': 0.0, 'max': 3.5, 'step': 0.01, 'format': "%.2f", 'default': 1.5},
-    'Si': {'name': 'Silicon', 'tooltip': 'Primary component (SiO₂)', 'min': 69.0, 'max': 75.0, 'step': 0.01, 'format': "%.2f", 'default': 72.0},
-    'K': {'name': 'Potassium', 'tooltip': 'Modifier', 'min': 0.0, 'max': 1.5, 'step': 0.001, 'format': "%.3f", 'default': 0.5},
-    'Ca': {'name': 'Calcium', 'tooltip': 'Hardness agent', 'min': 7.0, 'max': 14.0, 'step': 0.01, 'format': "%.2f", 'default': 9.0},
-    'Ba': {'name': 'Barium', 'tooltip': 'Glare reducer', 'min': 0.0, 'max': 2.5, 'step': 0.01, 'format': "%.2f", 'default': 0.0},
+    'Si': {'name': 'Silicon', 'tooltip': 'Primary component (SiO₂)', 'min': 00.0, 'max': 75.5, 'step': 0.01, 'format': "%.2f", 'default': 72.0},
+    'K': {'name': 'Potassium', 'tooltip': 'Modifier', 'min': 0.0, 'max': 6.21, 'step': 0.001, 'format': "%.3f", 'default': 0.5},
+    'Ca': {'name': 'Calcium', 'tooltip': 'Hardness agent', 'min': 0.0, 'max': 16.5, 'step': 0.01, 'format': "%.2f", 'default': 9.0},
+    'Ba': {'name': 'Barium', 'tooltip': 'Glare reducer', 'min': 0.0, 'max': 3.5, 'step': 0.01, 'format': "%.2f", 'default': 0.0},
     'Fe': {'name': 'Iron', 'tooltip': 'Coloring agent', 'min': 0.0, 'max': 0.5, 'step': 0.01, 'format': "%.2f", 'default': 0.1},
 }
 

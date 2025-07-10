@@ -92,7 +92,7 @@ if mode == "Single Prediction":
     reset = st.button("🔁 Reset Inputs")
     if reset:
         st.session_state.clear()
-        st.experimental_rerun()
+        st.rerun()  # ✅ FIXED: Use stable API
 
     user_inputs = {}
     for feature, info in FEATURE_INFO.items():

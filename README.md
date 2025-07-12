@@ -101,6 +101,7 @@ Class	Glass Type
 
 👨‍💻 Author
 Adithya Purama
+Polu Haritha
 GitHub Profile
 
 📃 License
@@ -108,5 +109,3 @@ For educational use only. Based on publicly available data.
 
 
 ---
-
-✅ Copy this into a file named `README.md` and commit it to your repository. Let me know if you'd like a version with badges or deployment instructions included later!
